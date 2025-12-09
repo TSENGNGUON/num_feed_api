@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/num_feed
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: "nguon$$w0rd"
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "sengn5112@gmail.com"
+    password: "qlym duii yikr ybgy"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls: #TLS (Transport Layer Security) and SMTP (Simple Mail Transfer Protocol)
+            enable: true
+            required: true
+ # OAuth2 Configuration (for token validation)
+oauth2:
+  google:
+    client-id: ${GOOGLE_CLIENT_ID}
+  facebook:
+    app-id: ${FACEBOOK_APP_ID}
+    app-secret: ${FACEBOOK_APP_SECRET}
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:yourSecretKeyThatShouldBeLongAndSecure123456789}
+  expiration: 86400000 # 24 hours
+
+
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
