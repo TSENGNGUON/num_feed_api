@@ -1,4 +1,4 @@
-package org.example.instragramclone.user;
+package org.example.instragramclone.common;
 
 public enum AuthProvider {
     LOCAL,

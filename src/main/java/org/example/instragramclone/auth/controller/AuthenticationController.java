@@ -1,5 +1,6 @@
 package org.example.instragramclone.auth.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.RequiredArgsConstructor;
 import org.example.instragramclone.auth.dto.request.AuthenticationRequest;
 import org.example.instragramclone.auth.dto.response.AuthenticationResponse;

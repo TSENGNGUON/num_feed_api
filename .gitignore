@@ -35,3 +35,16 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Spring Boot local config
+src/main/resources/application.yml
+# Spring Boot profiles (local secrets)
+src/main/resources/application-*.yml
+
+
+### Environment Variables ###
+.env
+.env.local
+.env.*.local
+*.env
+.envrc

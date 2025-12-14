@@ -5,12 +5,12 @@ import org.example.instragramclone.auth.dto.request.AuthenticationRequest;
 import org.example.instragramclone.auth.dto.request.RegisterRequest;
 import org.example.instragramclone.auth.dto.response.AuthenticationResponse;
 import org.example.instragramclone.auth.dto.response.UserInfo;
-import org.example.instragramclone.auth.repository.UserRepository;
+import org.example.instragramclone.user.repository.UserRepository;
 import org.example.instragramclone.auth.service.AuthenticationService;
 import org.example.instragramclone.common.dto.response.ApiResponse;
 import org.example.instragramclone.security.jwt.JwtService;
-import org.example.instragramclone.user.Role;
-import org.example.instragramclone.user.User;
+import org.example.instragramclone.common.Role;
+import org.example.instragramclone.user.dto.UserDto;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +27,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public ApiResponse<AuthenticationResponse> register(RegisterRequest request) {
-        var user = User.builder()
+        var user = UserDto.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))

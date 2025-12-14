@@ -7,13 +7,13 @@ import org.example.instragramclone.auth.dto.request.FacebookLoginRequest;
 import org.example.instragramclone.auth.dto.request.GoogleLoginRequest;
 import org.example.instragramclone.auth.dto.response.AuthenticationResponse;
 import org.example.instragramclone.auth.dto.response.UserInfo;
-import org.example.instragramclone.auth.repository.UserRepository;
+import org.example.instragramclone.user.repository.UserRepository;
 import org.example.instragramclone.auth.service.OAuthService;
 import org.example.instragramclone.common.dto.response.ApiResponse;
 import org.example.instragramclone.security.jwt.JwtService;
-import org.example.instragramclone.user.AuthProvider;
-import org.example.instragramclone.user.Role;
-import org.example.instragramclone.user.User;
+import org.example.instragramclone.common.AuthProvider;
+import org.example.instragramclone.common.Role;
+import org.example.instragramclone.user.dto.UserDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -52,17 +52,17 @@ public class OAuthServiceImpl implements OAuthService {
         String name = verifiedName;
         String finalEmail = verifiedEmail;
 
-        User user = userRepository.findByEmail(finalEmail)
+        UserDto userDto = userRepository.findByEmail(finalEmail)
                 .map(existing -> updateProvider(existing, AuthProvider.GOOGLE, providerId))
                 .orElseGet(() -> {
                     String uniqueUsername = generateUniqueUsername(name, finalEmail);
                     return createProviderUser(uniqueUsername, finalEmail, providerId, AuthProvider.GOOGLE);
                 });
 
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateToken(userDto);
         UserInfo userInfo = UserInfo.builder()
                 .name(verifiedName)
-                .email(user.getEmail())
+                .email(userDto.getEmail())
                 .build();
         AuthenticationResponse authResponse = AuthenticationResponse.builder()
                 .token(token)
@@ -94,17 +94,17 @@ public class OAuthServiceImpl implements OAuthService {
                 ? fbUserInfo.getId() 
                 : accessToken;
 
-        User user = userRepository.findByEmail(verifiedEmail)
+        UserDto userDto = userRepository.findByEmail(verifiedEmail)
                 .map(existing -> updateProvider(existing, AuthProvider.FACEBOOK, providerId))
                 .orElseGet(() -> {
                     String uniqueUsername = generateUniqueUsername(verifiedName, verifiedEmail);
                     return createProviderUser(uniqueUsername, verifiedEmail, providerId, AuthProvider.FACEBOOK);
                 });
 
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateToken(userDto);
         UserInfo userInfo = UserInfo.builder()
                 .name(verifiedName)
-                .email(user.getEmail())
+                .email(userDto.getEmail())
                 .build();
         AuthenticationResponse authResponse = AuthenticationResponse.builder()
                 .token(token)
@@ -113,14 +113,14 @@ public class OAuthServiceImpl implements OAuthService {
         return ApiResponse.success(authResponse, "Facebook login successful");
     }
 
-    private User updateProvider(User user, AuthProvider provider, String providerId) {
-        user.setProvider(provider);
-        user.setProviderId(providerId);
-        return userRepository.save(user);
+    private UserDto updateProvider(UserDto userDto, AuthProvider provider, String providerId) {
+        userDto.setProvider(provider);
+        userDto.setProviderId(providerId);
+        return userRepository.save(userDto);
     }
 
-    private User createProviderUser(String username, String email, String providerId, AuthProvider provider) {
-        User user = User.builder()
+    private UserDto createProviderUser(String username, String email, String providerId, AuthProvider provider) {
+        UserDto userDto = UserDto.builder()
                 .username(username)
                 .email(email)
                 .password("N/A")
@@ -128,7 +128,7 @@ public class OAuthServiceImpl implements OAuthService {
                 .provider(provider)
                 .providerId(providerId)
                 .build();
-        return userRepository.save(user);
+        return userRepository.save(userDto);
     }
 
     private String extractGoogleUserId(String idToken) {

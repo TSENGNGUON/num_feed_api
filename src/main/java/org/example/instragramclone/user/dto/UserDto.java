@@ -1,18 +1,21 @@
-package org.example.instragramclone.user;
+package org.example.instragramclone.user.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 import org.example.instragramclone.entities.ForgotPassword;
+import org.example.instragramclone.common.AuthProvider;
+import org.example.instragramclone.common.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-import static org.example.instragramclone.user.AuthProvider.LOCAL;
+import static org.example.instragramclone.common.AuthProvider.LOCAL;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +23,7 @@ import static org.example.instragramclone.user.AuthProvider.LOCAL;
 @Builder
 @Entity
 @Table(name = "_users")
-public class User implements UserDetails {
+public class UserDto implements UserDetails {
     @Id
     @GeneratedValue
     private Integer id;
@@ -34,6 +37,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = true, name = "image_url")
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
@@ -46,8 +52,19 @@ public class User implements UserDetails {
     @Column(name = "provider_id", columnDefinition = "TEXT")
     private String providerId;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "userDto")
     private ForgotPassword forgotPassword;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -85,9 +102,13 @@ public class User implements UserDetails {
     }
 
     @PrePersist
-    public void prePersistDefaults() {
-        if (provider == null) {
-            provider = LOCAL;
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+        if (this.provider == null) {
+            this.provider = LOCAL;
         }
     }
+
 }

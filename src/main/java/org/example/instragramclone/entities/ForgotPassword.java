@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.instragramclone.user.User;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.example.instragramclone.user.dto.UserDto;
 
 import java.util.Date;
 
@@ -29,5 +28,5 @@ public class ForgotPassword {
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    private UserDto userDto;
 }

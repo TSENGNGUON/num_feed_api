@@ -31,7 +31,9 @@ public class SecurityConfiguration {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
-                                "/forgotPassword/**"
+                                "/forgotPassword/**",
+                                "/api/v1/files/**"
+
                         ).permitAll()
                         // Auth endpoints - PUBLIC
                         .requestMatchers("/api/v1/auth/**").permitAll()

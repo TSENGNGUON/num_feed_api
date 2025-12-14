@@ -1,16 +1,15 @@
 package org.example.instragramclone.auth.controller;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.example.instragramclone.auth.dto.ChangePassword;
 import org.example.instragramclone.auth.dto.MailBody;
 import org.example.instragramclone.auth.dto.VerifyMailRequest;
 import org.example.instragramclone.auth.repository.ForgotPasswordRepository;
-import org.example.instragramclone.auth.repository.UserRepository;
+import org.example.instragramclone.user.repository.UserRepository;
 import org.example.instragramclone.common.dto.response.ApiResponse;
 import org.example.instragramclone.entities.ForgotPassword;
 import org.example.instragramclone.service.EmailService;
-import org.example.instragramclone.user.User;
+import org.example.instragramclone.user.dto.UserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,7 +35,7 @@ public class ForgotPasswordController {
     @Transactional
     public ResponseEntity<ApiResponse<String>> verifyEmail(@RequestBody VerifyMailRequest request){
         String email = request.getEmail();
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
+        UserDto userDto = userRepository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException("Please provide a valid email!"));
         int otp = otpGenerator();
         MailBody mailBody = MailBody.builder()
@@ -45,13 +44,13 @@ public class ForgotPasswordController {
                 .subject("OTP for Forgot Password request")
                 .build();
 
-        ForgotPassword fp = forgotPasswordRepository.findByUser(user).orElse(null);
+        ForgotPassword fp = forgotPasswordRepository.findByUserDto(userDto).orElse(null);
         Date expiry = new Date(System.currentTimeMillis() + 2 * 60 * 1000);
         if (fp == null) {
             fp = ForgotPassword.builder()
                     .otp(otp)
                     .expirationTime(expiry)
-                    .user(user)
+                    .userDto(userDto)
                     .build();
         } else {
             fp.setOtp(otp);
@@ -73,11 +72,11 @@ public class ForgotPasswordController {
     @PostMapping("/verifyOtp/{otp}/{email}")
     public ResponseEntity<ApiResponse<String>> verifyOtp(@PathVariable Integer otp,@PathVariable String email){
         // Find user by email
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
+        UserDto userDto = userRepository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException("Please provide a valid email!"));
 
         // Find OTP record for user
-        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp, user)
+        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp, userDto)
                 .orElseThrow(() -> new RuntimeException("Invalid OTP for Email : " + email));
 
         if (fp.getExpirationTime().before(Date.from(Instant.now()))){
