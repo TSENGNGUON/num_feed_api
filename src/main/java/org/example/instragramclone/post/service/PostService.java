@@ -7,9 +7,13 @@ import org.example.instragramclone.post.dto.PostFeedResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 
+import java.util.UUID;
+
 public interface PostService {
     ApiResponse<PostFeedResponse> createPost(CreatePostRequest request, Authentication authentication);
-    PageResponse<PostFeedResponse> getFeed(Pageable pageable);
-    ApiResponse<PostFeedResponse> getPostById(Long id);
-    ApiResponse<String> deletePost(Long id, Authentication authentication);
+    PageResponse<PostFeedResponse> getFeed(Pageable pageable, Authentication authentication);
+    ApiResponse<PostFeedResponse> getPostById(UUID id, Authentication authentication);
+    ApiResponse<String> deletePost(UUID id, Authentication authentication);
+    ApiResponse<String> repostPost(UUID postId, Authentication authentication);
+    ApiResponse<String> unrepostPost(UUID postId, Authentication authentication);
 }

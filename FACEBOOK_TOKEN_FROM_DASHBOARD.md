@@ -22,8 +22,8 @@
 1. **Click the "Generate Access Token" button** (usually a blue button)
 2. A popup will appear asking for permissions
 3. **Select these permissions**:
-   - ✅ `email` (to get userDto's email)
-   - ✅ `public_profile` (to get userDto's name and profile info)
+   - ✅ `email` (to get user's email)
+   - ✅ `public_profile` (to get user's name and profile info)
 4. Click **"Generate Access Token"**
 5. **Copy the token** - it will look like: `EAABwzLixnjYBO7ZC...` (long string)
 
@@ -32,7 +32,7 @@
 1. In Graph API Explorer, you'll see a text field with endpoint: `me`
 2. Change it to: `me?fields=id,name,email`
 3. Click **"Submit"** button
-4. You should see your Facebook userDto information in JSON format:
+4. You should see your Facebook user information in JSON format:
    ```json
    {
      "id": "123456789",
@@ -128,9 +128,9 @@ https://developers.facebook.com/tools/explorer/
 
 1. ✅ Your backend receives the access token
 2. ✅ Backend calls Facebook: `https://graph.facebook.com/me?fields=id,name,email&access_token=YOUR_TOKEN`
-3. ✅ Facebook verifies token and returns your userDto info
-4. ✅ Backend extracts: userDto ID, name, email
-5. ✅ Backend creates/updates userDto in database with FACEBOOK provider
+3. ✅ Facebook verifies token and returns your user info
+4. ✅ Backend extracts: user ID, name, email
+5. ✅ Backend creates/updates user in database with FACEBOOK provider
 6. ✅ Backend returns JWT token for your app
 
 ---
@@ -138,7 +138,7 @@ https://developers.facebook.com/tools/explorer/
 ## Next Steps After Testing
 
 1. **Test with different tokens** to ensure it works consistently
-2. **Check your database** to see the created/updated userDto
+2. **Check your database** to see the created/updated user
 3. **Use the returned JWT token** to access protected endpoints
 4. **For production**: Implement long-lived tokens and token refresh
 

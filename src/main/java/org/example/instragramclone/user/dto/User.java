@@ -2,7 +2,9 @@ package org.example.instragramclone.user.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import jakarta.persistence.*;
 import org.example.instragramclone.entities.ForgotPassword;
 import org.example.instragramclone.common.AuthProvider;
@@ -12,21 +14,27 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.example.instragramclone.common.AuthProvider.LOCAL;
 
 @Data
+@EqualsAndHashCode(exclude = {"forgotPassword", "follower", "following"})
+@ToString(exclude = {"forgotPassword", "follower", "following"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "_users")
-public class UserDto implements UserDetails {
+public class User implements UserDetails {
     @Id
-    @GeneratedValue
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "uuid")
+    private UUID id;
 
     @Column(nullable = false, unique = true, length = 50)
     private String username;
@@ -52,8 +60,22 @@ public class UserDto implements UserDetails {
     @Column(name = "provider_id", columnDefinition = "TEXT")
     private String providerId;
 
-    @OneToOne(mappedBy = "userDto")
+    @OneToOne(mappedBy = "user")
     private ForgotPassword forgotPassword;
+    // Follow feature
+    @ManyToMany(mappedBy = "following")
+    private Set<User> follower = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "user_following",
+        joinColumns = @JoinColumn(name = "follower_id", columnDefinition = "uuid"),
+        inverseJoinColumns = @JoinColumn(name = "following_id", columnDefinition = "uuid")
+    )
+    private Set<User> following = new HashSet<>();
+
+
+
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -80,6 +102,8 @@ public class UserDto implements UserDetails {
     public String getUsername() {
         return username;
     }
+
+
 
     @Override
     public boolean isAccountNonExpired() {

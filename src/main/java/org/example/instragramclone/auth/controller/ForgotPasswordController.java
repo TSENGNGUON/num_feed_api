@@ -9,7 +9,7 @@ import org.example.instragramclone.user.repository.UserRepository;
 import org.example.instragramclone.common.dto.response.ApiResponse;
 import org.example.instragramclone.entities.ForgotPassword;
 import org.example.instragramclone.service.EmailService;
-import org.example.instragramclone.user.dto.UserDto;
+import org.example.instragramclone.user.dto.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,7 +35,7 @@ public class ForgotPasswordController {
     @Transactional
     public ResponseEntity<ApiResponse<String>> verifyEmail(@RequestBody VerifyMailRequest request){
         String email = request.getEmail();
-        UserDto userDto = userRepository.findByEmail(email).orElseThrow(() ->
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException("Please provide a valid email!"));
         int otp = otpGenerator();
         MailBody mailBody = MailBody.builder()
@@ -44,13 +44,13 @@ public class ForgotPasswordController {
                 .subject("OTP for Forgot Password request")
                 .build();
 
-        ForgotPassword fp = forgotPasswordRepository.findByUserDto(userDto).orElse(null);
+        ForgotPassword fp = forgotPasswordRepository.findByUser(user).orElse(null);
         Date expiry = new Date(System.currentTimeMillis() + 2 * 60 * 1000);
         if (fp == null) {
             fp = ForgotPassword.builder()
                     .otp(otp)
                     .expirationTime(expiry)
-                    .userDto(userDto)
+                    .user(user)
                     .build();
         } else {
             fp.setOtp(otp);
@@ -72,11 +72,11 @@ public class ForgotPasswordController {
     @PostMapping("/verifyOtp/{otp}/{email}")
     public ResponseEntity<ApiResponse<String>> verifyOtp(@PathVariable Integer otp,@PathVariable String email){
         // Find user by email
-        UserDto userDto = userRepository.findByEmail(email).orElseThrow(() ->
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException("Please provide a valid email!"));
 
         // Find OTP record for user
-        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp, userDto)
+        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp, user)
                 .orElseThrow(() -> new RuntimeException("Invalid OTP for Email : " + email));
 
         if (fp.getExpirationTime().before(Date.from(Instant.now()))){

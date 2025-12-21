@@ -131,7 +131,7 @@ curl -X POST "http://localhost:8080/api/v1/auth/oauth/facebook" \
 
 Once you have real tokens, you can:
 1. Update `OAuthServiceImpl` to verify the tokens
-2. Extract userDto information from verified tokens
+2. Extract user information from verified tokens
 3. Test the full OAuth flow
 
 ---
@@ -176,7 +176,7 @@ curl -X GET "http://localhost:8080/api/v1/demo-controller" \
 - For production, you must implement proper token verification:
   - Google: Verify ID token using Google's public keys
   - Facebook: Verify access token by calling Facebook's Graph API
-- The `providerId` field stores the token/ID for now (should store actual provider userDto ID in production)
+- The `providerId` field stores the token/ID for now (should store actual provider user ID in production)
 
 ---
 

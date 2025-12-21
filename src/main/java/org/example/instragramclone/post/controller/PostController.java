@@ -14,9 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -28,13 +27,8 @@ public class PostController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<PostFeedResponse>> createPost(
-            @RequestParam(value = "caption", required = false) String caption,
-            @RequestPart("images") List<MultipartFile> images,
+            @ModelAttribute CreatePostRequest request,
             Authentication authentication) {
-        CreatePostRequest request = new CreatePostRequest();
-        request.setCaption(caption);
-        request.setImages(images);
-        
         ApiResponse<PostFeedResponse> response = postService.createPost(request, authentication);
         return ResponseEntity.ok(response);
     }
@@ -42,23 +36,42 @@ public class PostController {
     @GetMapping
     public ResponseEntity<PageResponse<PostFeedResponse>> getFeed(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        PageResponse<PostFeedResponse> response = postService.getFeed(pageable);
+        PageResponse<PostFeedResponse> response = postService.getFeed(pageable, authentication);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostFeedResponse>> getPostById(@PathVariable Long id) {
-        ApiResponse<PostFeedResponse> response = postService.getPostById(id);
+    public ResponseEntity<ApiResponse<PostFeedResponse>> getPostById(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        ApiResponse<PostFeedResponse> response = postService.getPostById(id, authentication);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deletePost(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             Authentication authentication) {
         ApiResponse<String> response = postService.deletePost(id, authentication);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/repost")
+    public ResponseEntity<ApiResponse<String>> repostPost(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        ApiResponse<String> response = postService.repostPost(id, authentication);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}/repost")
+    public ResponseEntity<ApiResponse<String>> unrepostPost(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        ApiResponse<String> response = postService.unrepostPost(id, authentication);
         return ResponseEntity.ok(response);
     }
 }

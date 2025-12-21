@@ -10,7 +10,7 @@ import org.example.instragramclone.auth.service.AuthenticationService;
 import org.example.instragramclone.common.dto.response.ApiResponse;
 import org.example.instragramclone.security.jwt.JwtService;
 import org.example.instragramclone.common.Role;
-import org.example.instragramclone.user.dto.UserDto;
+import org.example.instragramclone.user.dto.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +27,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public ApiResponse<AuthenticationResponse> register(RegisterRequest request) {
-        var user = UserDto.builder()
+        var user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -36,6 +36,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);
         UserInfo userInfo = UserInfo.builder()
+                .id(user.getId())
                 .name(user.getUsername())
                 .email(user.getEmail())
                 .build();

@@ -22,7 +22,7 @@ This guide shows you how to get a real Facebook access token and test it with yo
 
 4. **Verify Token Works**:
    - In the Graph API Explorer, set the endpoint to: `me?fields=id,name,email`
-   - Click "Submit" - you should see your Facebook userDto info
+   - Click "Submit" - you should see your Facebook user info
 
 ### Step 2: Test with Your API
 
@@ -120,7 +120,7 @@ Use Facebook Android SDK to get the access token, then send it to your backend.
 2. **User Info Extraction**: Extracts `id`, `name`, and `email` from Facebook's response
 3. **User Creation/Update**: 
    - If email exists: Updates provider to FACEBOOK
-   - If new: Creates userDto with FACEBOOK provider
+   - If new: Creates user with FACEBOOK provider
 4. **JWT Generation**: Returns a JWT token for your app
 
 ---
